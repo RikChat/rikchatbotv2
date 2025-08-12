@@ -1,0 +1,9 @@
+{
+  "name": "chatbot-vercel",
+  "version": "1.0.0",
+  "description": "A simple chatbot deployed on Vercel.",
+  "dependencies": {
+    "openai": "^4.0.0"
+  },
+  "type": "module"
+}
