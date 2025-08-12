@@ -9,11 +9,11 @@ const mainContent = document.getElementById('main-content');
 const offlinePopup = document.getElementById('offline-popup');
 const sidebar = document.getElementById('sidebar');
 const menuToggle = document.getElementById('menu-toggle');
-const clearChatButton = document.getElementById('clear-chat-button');
+const clearChatButton = document.getElementById('clear-chat-button'); // Tambahkan ini
 
-// Ganti dengan API Key Google Gemini Anda
-const GEMINI_API_KEY = 'AIzaSyAj4nFrQSIHERtkWr7ZM_Uz8_IqURLSvIM'; // Saya menggunakan kunci yang Anda berikan
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key='; // URL API diubah
+// Ganti dengan API Key Anda dari OpenAI
+const OPENAI_API_KEY = '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';
+
 
 //======================================================================
 //                       FUNGSI UTAMA CHATBOT
@@ -46,6 +46,7 @@ function createMessageElement(text, isUser) {
         messageDiv.classList.add('bot-message');
         const botAvatar = document.createElement('div');
         botAvatar.classList.add('avatar-sm');
+        // botAvatar.textContent = 'RK'; // Menggunakan gambar, jadi ini tidak perlu
         messageDiv.appendChild(botAvatar);
         messageDiv.appendChild(messageContent);
         messageDiv.appendChild(messageTime);
@@ -58,21 +59,20 @@ function createMessageElement(text, isUser) {
 }
 
 /**
- * Mengirim pesan ke API Google Gemini dan mengembalikan respons.
+ * Mengirim pesan ke API OpenAI dan mengembalikan respons.
  * @param {string} message - Pesan dari pengguna.
- * @returns {Promise<string>} Teks balasan dari Gemini API.
+ * @returns {Promise<string>} Teks balasan dari OpenAI.
  */
-async function sendMessageToAI(message) {
-    const response = await fetch(GEMINI_API_URL + GEMINI_API_KEY, {
+async function sendMessageToOpenAI(message) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-            contents: [{
-                role: "user",
-                parts: [{ text: message }]
-            }]
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: message }],
         })
     });
 
@@ -81,7 +81,7 @@ async function sendMessageToAI(message) {
     }
 
     const data = await response.json();
-    return data.candidates[0].content.parts[0].text.trim();
+    return data.choices[0].message.content;
 }
 
 
@@ -172,12 +172,12 @@ async function handleSendMessage() {
         typingIndicator.classList.add('typing-indicator');
 
         try {
-            const botResponse = await sendMessageToAI(userMessage);
+            const botResponse = await sendMessageToOpenAI(userMessage);
             chatMessages.removeChild(typingIndicator);
             createMessageElement(botResponse, false);
             saveChatHistory();
         } catch (error) {
-            console.error('Error fetching from Gemini API:', error);
+            console.error('Error fetching from OpenAI:', error);
             chatMessages.removeChild(typingIndicator);
             createMessageElement('Maaf, ada masalah saat berkomunikasi dengan AI. Silakan coba lagi.', false);
             saveChatHistory();
