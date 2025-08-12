@@ -11,8 +11,8 @@ const sidebar = document.getElementById('sidebar');
 const menuToggle = document.getElementById('menu-toggle');
 const clearChatButton = document.getElementById('clear-chat-button');
 
-// Kunci API dihapus dari kode klien, sekarang diambil dari serverless function
-const VERCEL_FUNCTION_URL = '/chat-openai'; // URL endpoint yang diubah
+// Kunci API dihapus dari kode klien, sekarang diambil dari Serverless Function
+const API_ENDPOINT = '/api/chat'; 
 
 
 //======================================================================
@@ -63,12 +63,12 @@ function createMessageElement(text, isUser) {
  * @returns {Promise<string>} Teks balasan dari OpenAI.
  */
 async function sendMessageToAI(message) {
-    const response = await fetch(VERCEL_FUNCTION_URL, {
+    const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: message }) // Kirim pesan ke Serverless Function
+        body: JSON.stringify({ message: message }) 
     });
 
     if (!response.ok) {
