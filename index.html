@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RikChatBot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="splash-screen" id="splash-screen">
+        <div class="logo-splash">RK</div>
+        <div class="loading-indicator"></div>
+    </div>
+    
+    <div class="app-container" id="main-content">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">RK</div>
+                <div class="brand">
+                    <h3>RikChatBot</h3>
+                    <p>AI-powered assistant</p>
+                </div>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search">
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-item active"><i class="fas fa-comment"></i> Chats</a>
+                <a href="#" class="nav-item"><i class="fas fa-users"></i> Rooms</a>
+                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" class="nav-item clear-chat" id="clear-chat-button">
+                    <i class="fas fa-trash-alt"></i> Clear Chat
+                </a>
+            </nav>
+            <div class="divider"></div>
+            <div class="user-list">
+                <div class="user-item">
+                    <div class="user-avatar-list">JD</div>
+                    <div class="user-info">
+                        <h4>John Doe</h4>
+                        <p>Sure, I'll check that out.</p>
+                    </div>
+                </div>
+                <div class="user-item">
+                    <div class="user-avatar-list">JS</div>
+                    <div class="user-info">
+                        <h4>Jane Smith</h4>
+                        <p>Thank you so much!</p>
+                    </div>
+                </div>
+                <div class="user-item">
+                    <div class="user-avatar-list">AJ</div>
+                    <div class="user-info">
+                        <h4>Alex Johnson</h4>
+                        <p>Alright, I'll get back to....</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="chat-container">
+            <header class="chat-header">
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-info">
+                    <div class="user-avatar-chat">
+                        <img src="profile.jpg" alt="RikChatBot">
+                    </div>
+                    <div class="user-details">
+                        <h3>RikChatBot</h3>
+                        <p>Siap membantu kamu - tanya apa saja</p>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="chat-messages" id="chat-messages"></div>
+            
+            <div class="offline-popup" id="offline-popup">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Jaringan terputus. Silakan periksa koneksi Anda.</span>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Type a message">
+                <button id="send-button">KIRIM</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
