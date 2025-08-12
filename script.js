@@ -12,7 +12,7 @@ const menuToggle = document.getElementById('menu-toggle');
 const clearChatButton = document.getElementById('clear-chat-button');
 
 // Kunci API dihapus dari kode klien, sekarang diambil dari serverless function
-const VERCEL_FUNCTION_URL = '/api/chat-openai'; // URL endpoint yang diubah
+const VERCEL_FUNCTION_URL = '/chat-openai'; // URL endpoint yang diubah
 
 
 //======================================================================
