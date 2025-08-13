@@ -12,7 +12,12 @@ const menuToggle = document.getElementById('menu-toggle');
 const clearChatButton = document.getElementById('clear-chat-button');
 
 // Kunci API dihapus dari kode klien, sekarang diambil dari Serverless Function
-const API_ENDPOINT = '/api/chat'; 
+const API_KEY = "AIzaSyAj4nFrQSIHERtkWr7ZM_Uz8_IqURLSvIM";
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+let controller, typingInterval;
+const chatHistory = [];
+const userData = { message: "", file: {} };
 
 
 //======================================================================
