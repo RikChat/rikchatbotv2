@@ -19,7 +19,6 @@ let controller, typingInterval;
 const chatHistory = [];
 const userData = { message: "", file: {} };
 
-
 //======================================================================
 //                       FUNGSI UTAMA CHATBOT
 //======================================================================
