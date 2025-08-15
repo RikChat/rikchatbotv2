@@ -1,584 +1,959 @@
-/* Import font dari Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-:root {
-    --dark-bg: #1A1A2E;
-    --dark-card: #20203f;
-    --dark-text: #e0e0e0;
-    --accent-color: #6A1B9A;
-    --user-message-bg: #6A1B9A;
-    --bot-message-bg: #2B2B4D;
-    --border-color: #3b3b64;
-    --text-placeholder: #5A5A82;
-}
-
+/* =======================
+   1. RESET & BASE
+======================= */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--dark-bg);
-    color: var(--dark-text);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+  font-family: Arial, sans-serif;
+  background-color: #0e0e1a;
+  color: #fff;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.app-container {
-    display: flex;
-    width: 95%;
-    max-width: 1200px;
-    height: 95vh;
-    max-height: 800px;
-    background-color: var(--dark-card);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
+/* =======================
+   2. LAYOUT
+======================= */
+.app-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
-/* Sidebar Styling */
+/* =======================
+   3. SIDEBAR
+======================= */
 .sidebar {
-    width: 300px;
-    padding: 25px;
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
+  width: 260px;
+  background-color: #13132b;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  border-right: 1px solid rgba(255,255,255,0.1);
 }
 
 .sidebar-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
+  padding: 0 20px;
+  margin-bottom: 20px;
 }
 
 .logo {
-    width: 50px;
-    height: 50px;
-    background-color: var(--accent-color);
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.brand h3 {
-    margin: 0;
-    font-size: 1.2rem;
+.logo h2 {
+  font-size: 1.2rem;
 }
 
-.brand p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #a0a0a0;
+.logo .material-symbols-rounded {
+  font-size: 28px;
+  color: #9b5de5;
 }
 
-.search-container {
-    position: relative;
-    margin-bottom: 25px;
+/* Menu */
+.menu {
+  display: flex;
+  flex-direction: column;
 }
 
-.search-container i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #a0a0a0;
+.menu a {
+  color: #bbb;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: 0.2s;
 }
 
-.search-container input {
-    width: 100%;
-    background-color: var(--dark-bg);
-    border: none;
-    outline: none;
-    color: var(--dark-text);
-    padding: 12px 15px 12px 45px;
-    border-radius: 12px;
+.menu a.active,
+.menu a:hover {
+  background-color: rgba(155,93,229,0.2);
+  color: #fff;
 }
 
-.nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* Chat list */
+.chat-list {
+  margin-top: 20px;
 }
 
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    color: var(--dark-text);
-    text-decoration: none;
-    border-radius: 12px;
-    transition: background-color 0.3s;
+.chat-item {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.nav-item.active {
-    background-color: var(--border-color);
+.chat-item:hover {
+  background: rgba(255,255,255,0.05);
 }
-
-.nav-item:hover,
-.nav-item.clear-chat:hover {
-    background-color: var(--border-color);
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;   /* gambar dipotong biar pas bulat */
+  object-position: center; /* fokus ke tengah gambar */
+  flex-shrink: 0; /* biar nggak ketarik sama flexbox */
 }
-
-.nav-item i {
-    width: 20px;
-    text-align: center;
-}
-
-.nav-item.clear-chat {
-    color: #ef5350; /* Warna merah untuk tombol hapus */
-    margin-top: 10px; /* Jarak dari item di atasnya */
-}
-
-.divider {
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 20px 0;
-}
-
-.user-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.user-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 10px 15px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.user-item:hover {
-    background-color: var(--border-color);
-}
-
-.user-avatar-list {
-    width: 40px;
-    height: 40px;
-    background-color: var(--bot-message-bg);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-.user-info h4 {
-    margin: 0;
-    font-size: 1rem;
-}
-
-.user-info p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #a0a0a0;
-}
-
-/* Chat Container Styling */
-.chat-container {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+/* =======================
+   4. MAIN CHAT AREA
+======================= */
+.main-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #0e0e1a;
 }
 
 .chat-header {
-    display: flex;
-    align-items: center;
-    padding: 25px;
-    border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.chat-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.bot-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.user-avatar-chat {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    min-height: 50px;
-    background-color: var(--bot-message-bg);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+.bot-info img.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
 }
 
-.user-avatar-chat img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.bot-info h3 {
+  font-size: 1rem;
 }
 
-.user-details h3 {
-    margin: 0;
-    font-size: 1.2rem;
+.bot-info small {
+  color: #aaa;
 }
 
-.user-details p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #a0a0a0;
+#theme-toggle-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-.chat-messages {
-    flex-grow: 1;
-    padding: 25px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+/* =======================
+   5. CHAT CONTAINER
+======================= */
+.container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
 }
 
-.chat-messages::-webkit-scrollbar {
-    width: 8px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 10px;
+.chats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .message {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    max-width: 70%;
-}
-
-.bot-message {
-    justify-content: flex-start;
-    align-self: flex-start;
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  line-height: 1.4;
 }
 
 .user-message {
-    justify-content: flex-end;
-    align-self: flex-end;
-    flex-direction: row-reverse;
+  background-color: #9b5de5;
+  color: #fff;
+  align-self: flex-end;
 }
 
-.message-content {
-    padding: 12px 18px;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    word-wrap: break-word;
+.bot-message {
+  background: #e0e0e0;
+  padding: 10px 14px; /* tambah padding biar teks turun sedikit */
+  border-radius: 15px;
+  display: inline-block;
+  max-width: 80%;
+  line-height: 1.4; /* bikin jarak vertikal nyaman */
 }
 
-.bot-message .message-content {
-    background-color: var(--bot-message-bg);
-    border-bottom-left-radius: 5px;
+.bot-message img.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
 }
 
-.user-message .message-content {
-    background-color: var(--user-message-bg);
-    border-bottom-right-radius: 5px;
+/* =======================
+   6. PROMPT INPUT
+======================= */
+.prompt-container {
+  padding: 10px;
+  background-color: #13132b;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-.message-time {
-    font-size: 0.7rem;
-    color: #a0a0a0;
-    white-space: nowrap;
-    align-self: flex-end;
+.prompt-wrapper {
+  display: flex;
+  align-items: center;
 }
 
-.avatar-sm {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
-    background-color: var(--bot-message-bg);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.8rem;
-    font-weight: 500;
+.prompt-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #1e1e33;
+  border-radius: 25px;
+  padding: 5px 10px;
 }
 
-.chat-input-area {
-    display: flex;
-    padding: 20px 25px;
-    border-top: 1px solid var(--border-color);
-    gap: 10px;
-    align-items: center;
-    flex-shrink: 0;
+.prompt-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
 }
 
-.chat-input-area input {
-    flex-grow: 1;
-    background-color: var(--dark-bg);
-    border: none;
-    outline: none;
-    color: var(--dark-text);
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 1rem;
-    width: auto;
+.prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.chat-input-area input::placeholder {
-    color: var(--text-placeholder);
+.prompt-actions button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.chat-input-area button {
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s;
-    min-width: 80px;
+.prompt-actions button:hover {
+  color: #9b5de5;
 }
 
-.chat-input-area button:hover {
-    background-color: #5d1685;
+/* =======================
+   7. FILE UPLOAD
+======================= */
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* Styling untuk Splash Screen */
-.splash-screen {
-    position: fixed;
-    top: 0;
+.file-preview {
+  display: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+}
+
+/* =======================
+   8. DISCLAIMER
+======================= */
+.disclaimer-text {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* =======================
+   9. MODAL
+======================= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0; 
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background: #1e1e33;
+  padding: 20px;
+  margin: 10% auto;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  color: white;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #bbb;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+#history-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+#history-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* =======================
+   10. BOTTOM NAV (MOBILE)
+======================= */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1e1e2f;
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  z-index: 1000;
+}
+
+.bottom-nav a {
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  font-size: 12px;
+  flex: 1;
+  padding: 5px 0;
+  transition: color 0.3s;
+}
+
+.bottom-nav a:hover,
+.bottom-nav a.active {
+  color: #4CAF50;
+}
+
+.bottom-nav .material-symbols-rounded {
+  font-size: 24px;
+  display: block;
+}
+
+.nav-label {
+  font-size: 11px;
+}
+
+/* =======================
+   11. RESPONSIVE
+======================= */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .app-wrapper {
+    flex-direction: column;
+  }
+  .container {
+    padding: 10px;
+  }
+  .message {
+    max-width: 90%;
+    font-size: 14px;
+  }
+}
+
+/* =======================
+   12. LIGHT THEME
+======================= */
+body.light-theme {
+  background-color: #f5f5f5;
+  color: #222;
+}
+
+/* Sidebar */
+body.light-theme .sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-theme .logo .material-symbols-rounded {
+  color: #7b2cbf;
+}
+
+body.light-theme .menu a {
+  color: #555;
+}
+
+body.light-theme .menu a.active,
+body.light-theme .menu a:hover {
+  background-color: rgba(123,44,191,0.1);
+  color: #000;
+}
+
+body.light-theme .chat-item:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+body.light-theme .avatar {
+  background: #7b2cbf;
+}
+
+/* Main Chat */
+body.light-theme .main-chat {
+  background-color: #f5f5f5;
+}
+
+body.light-theme .chat-header {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-theme .bot-info small {
+  color: #666;
+}
+
+body.light-theme #theme-toggle-btn {
+  color: #333;
+}
+
+/* Chat Messages */
+body.light-theme .user-message {
+  background-color: #7b2cbf;
+  color: #fff;
+}
+
+body.light-theme .bot-message {
+  background-color: #eaeaea;
+  color: #222;
+}
+
+/* Prompt Input */
+body.light-theme .prompt-container {
+  background-color: #ffffff;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+body.light-theme .prompt-form {
+  background: ##000000;
+}
+
+body.light-theme .prompt-input {
+  color: #000;
+}
+
+body.light-theme .prompt-actions button {
+  color: #333;
+}
+
+body.light-theme .prompt-actions button:hover {
+  color: #7b2cbf;
+}
+
+/* Disclaimer */
+body.light-theme .disclaimer-text {
+  color: #666;
+}
+
+/* Modal */
+body.light-theme .modal-content {
+  background: #fff;
+  color: #000;
+}
+
+body.light-theme .close-btn:hover {
+  color: #000;
+}
+
+body.light-theme #history-list li {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+/* Neumorphism Dark Base */
+body {
+  background: #0e0e1a;
+}
+
+.sidebar, .main-chat, .prompt-form, .menu a, .chat-item, .user-message, .bot-message {
+  background: #13132b;
+  border-radius: 15px;
+  box-shadow: 6px 6px 12px rgba(0,0,0,0.4),
+              -6px -6px 12px rgba(255,255,255,0.05);
+}
+
+/* Hover effect for menu and chat items */
+.menu a:hover, .chat-item:hover {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4),
+              inset -4px -4px 8px rgba(255,255,255,0.05);
+}
+
+/* Input neumorphism */
+.prompt-form {
+  background: #13132b;
+  border-radius: 25px;
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4),
+              inset -4px -4px 8px rgba(255,255,255,0.05);
+}
+
+/* Buttons */
+.prompt-actions button {
+  border-radius: 50%;
+  padding: 8px;
+  background: #13132b;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.4),
+              -4px -4px 8px rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.prompt-actions button:hover {
+  box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4),
+              inset -3px -3px 6px rgba(255,255,255,0.05);
+}
+
+/* Light theme neumorphism */
+body.light-theme {
+  background: #e0e0e0;
+}
+
+body.light-theme .sidebar,
+body.light-theme .main-chat,
+body.light-theme .prompt-form,
+body.light-theme .menu a,
+body.light-theme .chat-item,
+body.light-theme .user-message,
+body.light-theme .bot-message {
+  background: #e0e0e0;
+  box-shadow: 6px 6px 12px rgba(0,0,0,0.15),
+              -6px -6px 12px rgba(255,255,255,0.8);
+}
+
+body.light-theme .menu a:hover,
+body.light-theme .chat-item:hover {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1),
+              inset -4px -4px 8px rgba(255,255,255,0.8);
+}
+/* Gaya untuk gambar di chat */
+.chat-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  margin-top: 8px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+}
+
+/* Border sesuai pengirim */
+.user-message .chat-image {
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.bot-message .chat-image {
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+/* Efek klik zoom */
+.chat-image.zoomed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  max-width: 90%;
+  max-height: 90%;
+  transform: translate(-50%, -50%);
+  z-index: 3000;
+  box-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+/* =======================
+   FIXED CHAT INPUT
+======================= */
+.prompt-container {
+  position: fixed;
+  bottom: 0;
+  left: 260px; /* menyesuaikan lebar sidebar */
+  right: 0;
+  z-index: 1000;
+}
+
+.container {
+  padding-bottom: 90px; /* ruang supaya pesan terakhir tidak tertutup input */
+}
+
+/* Responsif untuk layar kecil tanpa sidebar */
+@media (max-width: 768px) {
+  .prompt-container {
     left: 0;
     width: 100%;
-    height: 100%;
-    background-color: var(--dark-bg);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 1;
-    transition: opacity 0.5s ease-in-out;
+  }
+}
+/* Chat area scroll */
+.container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  box-sizing: border-box;
+  height: calc(100vh - 140px); /* Tinggi layar dikurangi header + input */
 }
 
-.splash-screen.hidden {
-    opacity: 0;
-    pointer-events: none;
+/* Pastikan main-chat menggunakan flex column */
+.main-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.logo-splash {
-    width: 100px;
-    height: 100px;
-    background-color: var(--accent-color);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-    font-weight: 600;
-    animation: bounce 1s infinite ease-in-out;
+/* Agar gambar di chat rapi */
+.chats-container img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+  margin-top: 5px;
+  object-fit: cover;
+}
+/* ========== STYLE ASLI KAMU DI SINI ==========
+   (aku asumsikan semua style lama tetap ada di atas ini)
+================================================ */
+
+/* ... style lama kamu di sini ... */
+
+
+
+
+
+/* =======================
+   TAMBAHAN STYLE
+======================= */
+
+/* Neumorphism Dark Base */
+.sidebar, .main-chat, .prompt-form, .menu a, .chat-item, .user-message, .bot-message {
+  background: #13132b;
+  border-radius: 15px;
+  box-shadow: 6px 6px 12px rgba(0,0,0,0.4),
+              -6px -6px 12px rgba(255,255,255,0.05);
 }
 
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+/* Hover effect for menu and chat items */
+.menu a:hover, .chat-item:hover {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4),
+              inset -4px -4px 8px rgba(255,255,255,0.05);
 }
 
-.loading-indicator {
-    width: 40px;
-    height: 5px;
-    background-color: var(--accent-color);
-    border-radius: 5px;
-    margin-top: 30px;
-    animation: progress 1s infinite linear;
+/* Input neumorphism */
+.prompt-form {
+  background: #13132b;
+  border-radius: 25px;
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4),
+              inset -4px -4px 8px rgba(255,255,255,0.05);
 }
 
-@keyframes progress {
-    0% { transform: scaleX(0); }
-    50% { transform: scaleX(1); }
-    100% { transform: scaleX(0); }
+/* Buttons */
+.prompt-actions button {
+  border-radius: 50%;
+  padding: 8px;
+  background: #13132b;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.4),
+              -4px -4px 8px rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
 }
 
-/* Styling untuk Offline Pop-up */
-.offline-popup {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #e53935;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    z-index: 1001;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+.prompt-actions button:hover {
+  box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4),
+              inset -3px -3px 6px rgba(255,255,255,0.05);
 }
 
-.offline-popup.visible {
-    opacity: 1;
-    visibility: visible;
+/* Light theme neumorphism */
+body.light-theme {
+  background: #e0e0e0;
 }
 
-.offline-popup i {
-    font-size: 1.2rem;
+body.light-theme .sidebar,
+body.light-theme .main-chat,
+body.light-theme .prompt-form,
+body.light-theme .menu a,
+body.light-theme .chat-item,
+body.light-theme .user-message,
+body.light-theme .bot-message {
+  background: #e0e0e0;
+  box-shadow: 6px 6px 12px rgba(0,0,0,0.15),
+              -6px -6px 12px rgba(255,255,255,0.8);
 }
 
-/* Styling untuk indikator mengetik */
-.typing-indicator .message-content {
-    animation: blink-animation 1s infinite;
+body.light-theme .menu a:hover,
+body.light-theme .chat-item:hover {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1),
+              inset -4px -4px 8px rgba(255,255,255,0.8);
 }
 
-@keyframes blink-animation {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+/* Gaya untuk gambar di chat */
+.chat-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  margin-top: 8px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
 }
 
-/* Sembunyikan konten utama secara default */
-#main-content {
-    display: none;
+/* Border sesuai pengirim */
+.user-message .chat-image {
+  border: 2px solid rgba(255,255,255,0.2);
 }
 
-/* =================================================== */
-/* RESPONSIVE DESIGN */
-/* =================================================== */
-
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--dark-text);
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-right: 15px;
+.bot-message .chat-image {
+  border: 2px solid rgba(255,255,255,0.1);
 }
 
+/* Efek klik zoom */
+.chat-image.zoomed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  max-width: 90%;
+  max-height: 90%;
+  transform: translate(-50%, -50%);
+  z-index: 3000;
+  box-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+
+/* =======================
+   FIXED CHAT INPUT
+======================= */
+.prompt-container {
+  position: fixed;
+  bottom: 0;
+  left: 260px; /* menyesuaikan lebar sidebar */
+  right: 0;
+  z-index: 1000;
+}
+
+.container {
+  padding-bottom: 90px; /* ruang supaya pesan terakhir tidak tertutup input */
+}
+
+/* Responsif untuk layar kecil tanpa sidebar */
 @media (max-width: 768px) {
-    body {
-        height: 100vh;
-        overflow: hidden;
-    }
-    
-    .app-container {
-        flex-direction: row;
-        width: 100%;
-        height: 100%;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .sidebar {
-        position: fixed;
-        left: -300px;
-        width: 300px;
-        height: 100%;
-        border-right: 1px solid var(--border-color);
-        padding: 25px;
-        background-color: var(--dark-card);
-        z-index: 100;
-        transition: left 0.3s ease-in-out;
-    }
-    
-    .sidebar.open {
-        left: 0;
-    }
-
-    .sidebar .search-container,
-    .sidebar .nav-links,
-    .sidebar .divider,
-    .sidebar .user-list {
-        display: flex;
-    }
-    
-    /* Tombol clear chat di mobile */
-    .sidebar .nav-links .nav-item.clear-chat {
-        display: flex;
-    }
-
-    .chat-container {
-        flex-grow: 1;
-        width: 100%;
-        overflow-y: auto;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-
-    .chat-header {
-        padding: 15px;
-    }
-
-    .chat-messages {
-        padding: 15px;
-    }
-
-    .message {
-        max-width: 85%;
-    }
-
-    .chat-input-area {
-        padding: 15px;
-        position: sticky;
-        bottom: 0;
-        background-color: var(--dark-card);
-    }
-
-    .offline-popup {
-        top: auto;
-        bottom: 20px;
-    }
+  .prompt-container {
+    left: 0;
+    width: 100%;
+  }
 }
 
-@media (max-width: 480px) {
-    .sidebar-header {
-        justify-content: center;
-        gap: 10px;
-    }
-    .brand h3 {
-        font-size: 1rem;
-    }
-    .brand p {
-        display: none;
-    }
-    .logo {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-    }
-    .user-avatar-chat {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-    }
-    .chat-info h3 {
-        font-size: 1rem;
-    }
-    .chat-info p {
-        font-size: 0.75rem;
-    }
-    .chat-input-area input {
-        font-size: 0.9rem;
-        padding: 10px 15px;
-    }
-    .chat-input-area button {
-        font-size: 0.9rem;
-        padding: 10px 20px;
-    }
+/* Chat area scroll */
+.container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  box-sizing: border-box;
+  height: calc(100vh - 140px); /* Tinggi layar dikurangi header + input */
+}
+
+/* Pastikan main-chat menggunakan flex column */
+.main-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Agar gambar di chat rapi */
+.chats-container img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+  margin-top: 5px;
+  object-fit: cover;
+}
+
+.verified-badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+.verified-badge svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Neumorphism Header */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #e0e0e0; /* Warna dasar tema */
+  border-radius: 18px;
+  margin: 10px;
+  box-shadow: 8px 8px 15px #bebebe,
+              -8px -8px 15px #ffffff;
+}
+
+.bot-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: inset 4px 4px 6px #bebebe,
+              inset -4px -4px 6px #ffffff;
+  padding: 3px;
+}
+
+.bot-info .avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bot-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.bot-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.15em;
+  font-weight: bold;
+  color: #333;
+}
+
+.verified-badge {
+  filter: drop-shadow(0 0 3px rgba(29,161,242,0.8));
+}
+
+.bot-status {
+  color: #666;
+  font-size: 0.85em;
+}
+
+/* Tombol Theme */
+#theme-toggle-btn {
+  background: #e0e0e0;
+  border: none;
+  color: #444;
+  font-size: 1.4em;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: 4px 4px 6px #bebebe,
+              -4px -4px 6px #ffffff;
+}
+/* Efek hover avatar */
+.chat-header .avatar {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.chat-header .avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.15),
+              -4px -4px 10px rgba(255,255,255,0.8);
+}
+
+/* Efek hover tombol theme */
+#theme-toggle-btn {
+  transition: all 0.25s ease;
+}
+#theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.1);
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.15),
+              -3px -3px 6px rgba(255,255,255,0.8);
+}
+
+/* Status online kedip */
+.bot-info small {
+  position: relative;
+  padding-left: 20px;
+}
+.bot-info small::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 8px #4caf50;
+  animation: blinkOnline 1.2s infinite ease-in-out;
+}
+
+@keyframes blinkOnline {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.bot-name {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.dev-badge {
+  background: #1DA1F2;
+  color: white;
+  font-size: 11px; /* Naikin dari 10px ke 11px */
+  font-weight: 600;
+  padding: 2px 6px; /* Tambah padding biar lebih besar */
+  border-radius: 4px;
+  margin-left: 4px; /* Tetap rapat */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  box-shadow: inset 1px 1px 2px rgba(255,255,255,0.4),
+              inset -1px -1px 2px rgba(0,0,0,0.2),
+              2px 2px 5px rgba(0,0,0,0.15);
+}
+
+/* Bubble Chat untuk Bot */
+.bot-message {
+  background: #e6e6e6;
+  padding: 12px 16px; /* kasih jarak atas-bawah lebih lega */
+  border-radius: 12px;
+  display: inline-block;
+  max-width: 80%;
+  line-height: 1.5;
+  font-size: 15px;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1),
+              inset -2px -2px 4px rgba(255,255,255,0.7),
+              2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Bubble Chat untuk User */
+.user-message {
+  background: #dcdcdc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: inline-block;
+  max-width: 80%;
+  line-height: 1.5;
+  font-size: 15px;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1),
+              inset -2px -2px 4px rgba(255,255,255,0.7),
+              2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Jarak antar bubble */
+.message {
+  margin-bottom: 10px;
 }
