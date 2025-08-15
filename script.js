@@ -1,17 +1,14 @@
-//======================================================================
-//                       DEKLARASI VARIABEL
-//======================================================================
-const chatMessages = document.getElementById('chat-messages');
-const userInput = document.getElementById('user-input');
-const sendButton = document.getElementById('send-button');
-const splashScreen = document.getElementById('splash-screen');
-const mainContent = document.getElementById('main-content');
-const offlinePopup = document.getElementById('offline-popup');
-const sidebar = document.getElementById('sidebar');
-const menuToggle = document.getElementById('menu-toggle');
-const clearChatButton = document.getElementById('clear-chat-button');
+// === Elemen DOM ===
+const container = document.querySelector(".container");
+const chatsContainer = document.querySelector(".chats-container");
+const promptForm = document.querySelector(".prompt-form");
+const promptInput = promptForm.querySelector(".prompt-input");
+const fileInput = promptForm.querySelector("#file-input");
+const fileUploadWrapper = promptForm.querySelector(".file-upload-wrapper");
+const filePreview = fileUploadWrapper.querySelector(".file-preview");
+const themeToggleBtn = document.querySelector("#theme-toggle-btn");
 
-// Kunci API dihapus dari kode klien, sekarang diambil dari Serverless Function
+// API Setup
 const API_KEY = "AIzaSyAj4nFrQSIHERtkWr7ZM_Uz8_IqURLSvIM";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
@@ -19,227 +16,204 @@ let controller, typingInterval;
 const chatHistory = [];
 const userData = { message: "", file: {} };
 
-//======================================================================
-//                       FUNGSI UTAMA CHATBOT
-//======================================================================
+// === Theme Setup ===
+const isLightTheme = localStorage.getItem("themeColor") === "light_mode";
+document.body.classList.toggle("light-theme", isLightTheme);
+themeToggleBtn.textContent = isLightTheme ? "dark_mode" : "light_mode";
 
-/**
- * Membuat dan menambahkan elemen pesan ke dalam UI chatbot.
- * @param {string} text - Teks pesan.
- * @param {boolean} isUser - true jika pesan dari pengguna, false jika dari bot.
- * @returns {HTMLElement} Elemen div pesan yang baru dibuat.
- */
-function createMessageElement(text, isUser) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message');
-    
-    const messageContent = document.createElement('div');
-    messageContent.classList.add('message-content');
-    messageContent.textContent = text;
-    
-    const messageTime = document.createElement('div');
-    messageTime.classList.add('message-time');
-    const now = new Date();
-    messageTime.textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+// === Fungsi Helper ===
+const createMessageElement = (content, ...classes) => {
+  const div = document.createElement("div");
+  div.classList.add("message", ...classes);
+  div.innerHTML = content;
+  return div;
+};
 
-    if (isUser) {
-        messageDiv.classList.add('user-message');
-        messageDiv.appendChild(messageContent);
-        messageDiv.appendChild(messageTime);
+// Perbaikan: scroll ke chats-container, bukan container
+const scrollToBottom = () => {
+  chatsContainer.scrollTo({
+    top: chatsContainer.scrollHeight,
+    behavior: "smooth"
+  });
+};
+
+const typingEffect = (text, textElement, botMsgDiv) => {
+  textElement.textContent = "";
+  const words = text.split(" ");
+  let wordIndex = 0;
+  typingInterval = setInterval(() => {
+    if (wordIndex < words.length) {
+      textElement.textContent += (wordIndex === 0 ? "" : " ") + words[wordIndex++];
+      scrollToBottom();
     } else {
-        messageDiv.classList.add('bot-message');
-        const botAvatar = document.createElement('div');
-        botAvatar.classList.add('avatar-sm');
-        messageDiv.appendChild(botAvatar);
-        messageDiv.appendChild(messageContent);
-        messageDiv.appendChild(messageTime);
+      clearInterval(typingInterval);
+      botMsgDiv.classList.remove("loading");
+      document.body.classList.remove("bot-responding");
     }
-    
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    return messageDiv;
-}
+  }, 40);
+};
 
-/**
- * Mengirim pesan ke API OpenAI melalui Serverless Function dan mengembalikan respons.
- * @param {string} message - Pesan dari pengguna.
- * @returns {Promise<string>} Teks balasan dari OpenAI.
- */
-async function sendMessageToAI(message) {
-    const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message: message }) 
+// === API Call ===
+const generateResponse = async (botMsgDiv) => {
+  const textElement = botMsgDiv.querySelector(".message-text");
+  controller = new AbortController();
+
+  chatHistory.push({
+    role: "user",
+    parts: [
+      { text: userData.message },
+      ...(userData.file.data ? [{ inline_data: (({ fileName, isImage, ...rest }) => rest)(userData.file) }] : [])
+    ],
+  });
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: chatHistory }),
+      signal: controller.signal,
     });
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API Error: ${response.status} - ${errorData.error}`);
-    }
-
     const data = await response.json();
-    return data.text.trim();
-}
+    if (!response.ok) throw new Error(data.error.message);
 
+    const responseText = data.candidates[0].content.parts[0].text.replace(/\*\*([^*]+)\*\*/g, "$1").trim();
+    typingEffect(responseText, textElement, botMsgDiv);
 
-//======================================================================
-//                       FUNGSI PENGELOLA HISTORY CHAT
-//======================================================================
+    chatHistory.push({ role: "model", parts: [{ text: responseText }] });
+  } catch (error) {
+    textElement.textContent = error.name === "AbortError" ? "Response generation stopped." : error.message;
+    textElement.style.color = "#d62939";
+    botMsgDiv.classList.remove("loading");
+    document.body.classList.remove("bot-responding");
+    scrollToBottom();
+  } finally {
+    userData.file = {};
+  }
+};
 
-/**
- * Menyimpan seluruh chat ke localStorage.
- */
-function saveChatHistory() {
-    const messages = chatMessages.innerHTML;
-    localStorage.setItem('chatHistory', messages);
-}
+// === Form Submission ===
+const handleFormSubmit = (e) => {
+  e.preventDefault();
+  const userMessage = promptInput.value.trim();
+  if (!userMessage && !userData.file.data) return;
+  if (document.body.classList.contains("bot-responding")) return;
 
-/**
- * Memuat history chat dari localStorage saat halaman dimuat.
- */
-function loadChatHistory() {
-    const savedHistory = localStorage.getItem('chatHistory');
-    if (savedHistory) {
-        chatMessages.innerHTML = savedHistory;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return true;
+  userData.message = userMessage;
+  promptInput.value = "";
+  document.body.classList.add("chats-active", "bot-responding");
+  fileUploadWrapper.classList.remove("file-attached", "img-attached", "active");
+
+  // Buat user message HTML
+  const userMsgHTML = `
+    <p class="message-text"></p>
+    ${userData.file.data ? 
+      (userData.file.isImage 
+        ? `<img src="data:${userData.file.mime_type};base64,${userData.file.data}" class="chat-image" />` 
+        : `<p class="file-attachment"><span class="material-symbols-rounded">description</span>${userData.file.fileName}</p>`) 
+      : ""}
+  `;
+  const userMsgDiv = createMessageElement(userMsgHTML, "user-message");
+  if (userData.message) userMsgDiv.querySelector(".message-text").textContent = userData.message;
+  chatsContainer.appendChild(userMsgDiv);
+  scrollToBottom();
+
+  setTimeout(() => {
+    const botMsgHTML = `<img class="avatar" src="profile.jpg" /> <p class="message-text">Sedang mengetik...</p>`;
+    const botMsgDiv = createMessageElement(botMsgHTML, "bot-message", "loading");
+    chatsContainer.appendChild(botMsgDiv);
+    scrollToBottom();
+    generateResponse(botMsgDiv);
+  }, 600);
+};
+
+// === File Upload Handling ===
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const reader = new FileReader();
+
+  if (isImage) {
+    reader.readAsDataURL(file);
+  } else if (file.type === "application/pdf") {
+    reader.readAsDataURL(file);
+  } else if (file.type === "text/plain" || file.type === "text/csv") {
+    reader.readAsText(file);
+  } else {
+    reader.readAsArrayBuffer(file);
+  }
+
+  reader.onload = (e) => {
+    let base64String;
+    if (isImage || file.type === "application/pdf") {
+      base64String = e.target.result.split(",")[1];
+      filePreview.src = e.target.result;
+    } else {
+      base64String = btoa(e.target.result);
+      filePreview.src = "";
+      filePreview.alt = e.target.result.slice(0, 200) + (e.target.result.length > 200 ? "..." : "");
     }
-    return false;
-}
 
-/**
- * Menghapus seluruh chat history.
- */
-function clearChatHistory() {
-    if (confirm("Apakah Anda yakin ingin menghapus semua riwayat chat? Tindakan ini tidak dapat dibatalkan.")) {
-        chatMessages.innerHTML = '';
-        localStorage.removeItem('chatHistory');
-        // Tambahkan pesan pembuka kembali setelah chat dihapus
-        createMessageElement("Riwayat chat telah dihapus. Silakan mulai percakapan baru!", false);
-        saveChatHistory();
-    }
-}
-
-
-//======================================================================
-//                       FUNGSI PENGELOLA UI DAN EVENT
-//======================================================================
-
-/**
- * Menampilkan pop-up peringatan offline.
- */
-function showOfflinePopup() {
-    offlinePopup.classList.add('visible');
-}
-
-/**
- * Menyembunyikan pop-up peringatan offline.
- */
-function hideOfflinePopup() {
-    offlinePopup.classList.remove('visible');
-}
-
-/**
- * Menyembunyikan splash screen dan menampilkan konten utama.
- */
-function hideSplashScreen() {
-    splashScreen.classList.add('hidden');
-    setTimeout(() => {
-        splashScreen.style.display = 'none';
-        mainContent.style.display = 'flex';
-    }, 500);
-}
-
-/**
- * Menangani logika pengiriman pesan.
- */
-async function handleSendMessage() {
-    const userMessage = userInput.value.trim();
-    if (userMessage) {
-        if (!navigator.onLine) {
-            showOfflinePopup();
-            return;
-        }
-
-        createMessageElement(userMessage, true);
-        userInput.value = '';
-        saveChatHistory();
-
-        const typingIndicator = createMessageElement('...', false);
-        typingIndicator.classList.add('typing-indicator');
-
-        try {
-            const botResponse = await sendMessageToAI(userMessage);
-            chatMessages.removeChild(typingIndicator);
-            createMessageElement(botResponse, false);
-            saveChatHistory();
-        } catch (error) {
-            console.error('Error fetching from OpenAI API:', error);
-            chatMessages.removeChild(typingIndicator);
-            createMessageElement('Maaf, ada masalah saat berkomunikasi dengan AI. Silakan coba lagi.', false);
-            saveChatHistory();
-        }
-    }
-}
-
-/**
- * Menutup sidebar (digunakan di mobile).
- */
-function closeSidebar() {
-    sidebar.classList.remove('open');
-}
-
-
-//======================================================================
-//                       EVENT LISTENERS
-//======================================================================
-
-// Event listener untuk tombol Kirim
-sendButton.addEventListener('click', handleSendMessage);
-
-// Event listener untuk tombol Enter di input teks
-userInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        handleSendMessage();
-    }
+    filePreview.style.display = "block";
+    fileUploadWrapper.classList.add("active", isImage ? "img-attached" : "file-attached");
+    userData.file = { fileName: file.name, data: base64String, mime_type: file.type, isImage };
+  };
 });
 
-// Event listener untuk tombol menu (Hamburger Icon)
-menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+// Cancel file upload
+document.querySelector("#cancel-file-btn").addEventListener("click", () => {
+  userData.file = {};
+  fileUploadWrapper.classList.remove("file-attached", "img-attached", "active");
+  filePreview.src = "";
+  filePreview.alt = "";
 });
 
-// Tutup sidebar saat salah satu link navigasi diklik di mobile
-const navLinks = document.querySelectorAll('.sidebar a');
-navLinks.forEach(link => {
-    link.addEventListener('click', closeSidebar);
+// Stop Bot Response
+document.querySelector("#stop-response-btn").addEventListener("click", () => {
+  controller?.abort();
+  userData.file = {};
+  clearInterval(typingInterval);
+  const loadingBot = chatsContainer.querySelector(".bot-message.loading");
+  if (loadingBot) loadingBot.classList.remove("loading");
+  document.body.classList.remove("bot-responding");
 });
 
-// Event listener untuk tombol Clear Chat
-clearChatButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Mencegah navigasi
-    clearChatHistory();
+// Theme Toggle
+themeToggleBtn.addEventListener("click", () => {
+  const isLightTheme = document.body.classList.toggle("light-theme");
+  localStorage.setItem("themeColor", isLightTheme ? "light_mode" : "dark_mode");
+  themeToggleBtn.textContent = isLightTheme ? "dark_mode" : "light_mode";
 });
 
-// Event listener untuk status jaringan
-window.addEventListener('offline', showOfflinePopup);
-window.addEventListener('online', hideOfflinePopup);
+// Delete all chats
+document.querySelector("#delete-chats-btn").addEventListener("click", () => {
+  chatHistory.length = 0;
+  chatsContainer.innerHTML = "";
+  document.body.classList.remove("chats-active", "bot-responding");
+});
 
-// Event listener yang berjalan saat semua aset halaman sudah dimuat
-window.addEventListener('load', () => {
-    setTimeout(hideSplashScreen, 1500); 
+// Add event listeners
+promptForm.addEventListener("submit", handleFormSubmit);
+promptForm.querySelector("#add-file-btn").addEventListener("click", () => fileInput.click());
 
-    setTimeout(() => {
-        if (!navigator.onLine) {
-            showOfflinePopup();
-        } 
-        
-        const hasHistory = loadChatHistory();
-        if (!hasHistory) {
-            createMessageElement("Hello! I'm RikChatBot. How can I assist you today?", false);
-        }
-    }, 2000); 
+// === Zoom Gambar Saat Diklik ===
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("chat-image")) {
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = "100vw";
+    overlay.style.height = "100vh";
+    overlay.style.background = "rgba(0,0,0,0.8)";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = 9999;
+    overlay.innerHTML = `<img src="${e.target.src}" style="max-width:90%;max-height:90%;border-radius:10px;" />`;
+    overlay.addEventListener("click", () => overlay.remove());
+    document.body.appendChild(overlay);
+  }
 });
