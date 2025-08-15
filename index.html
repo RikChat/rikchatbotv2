@@ -1,95 +1,225 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RikChatBot</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Neumorphism Profile Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: #ecf0f3;
+}
+
+.wrapper, .wrapper .img-area, .social-icons a, .buttons button {
+  background: #ecf0f3;
+  box-shadow: -3px -3px 7px #ffffff,
+               3px 3px 5px #ceced1;
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.wrapper .icon.arrow,
+.wrapper .icon.dots {
+  display: none;
+}
+
+.wrapper .img-area {
+  height: 270px;
+  width: 270px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -20px;
+}
+
+.wrapper .about {
+  color: #44476a;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.6;      /* Membuat jarak antar baris lebih nyaman */
+  text-align: center;    /* Teks di tengah card */
+  max-width: 500px;      /* Membatasi lebar agar teks tidak terlalu panjang */
+  margin: 10px 0 20px;   /* Jarak atas dan bawah */
+  padding: 0 15px;       /* Sedikit ruang di kiri dan kanan */
+}
+
+.img-area .inner-area {
+  height: calc(100% - 25px);
+  width: calc(100% - 25px);
+  border-radius: 50%;
+}
+
+.inner-area img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wrapper .name {
+  font-size: 28px;
+  font-weight: 500;
+  color: #31344b;
+  margin: 20px 0 10px 0;
+}
+
+.wrapper .about {
+  color: #44476a;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.wrapper .social-icons {
+  margin: 20px 0 30px 0;
+}
+
+.social-icons a {
+  position: relative;
+  height: 60px;
+  width: 60px;
+  margin: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 50%;
+}
+
+.social-icons a i {
+  font-size: 32px;
+}
+
+.social-icons a.html i { color: #e34c26; }
+.social-icons a.css i { color: #264de4; }
+.social-icons a.js i { color: #f7df1e; }
+.social-icons a.python i { color: #3776ab; }
+
+.social-icons a:hover i {
+  text-shadow: 0 0 8px currentColor, 0 0 15px currentColor;
+  transform: scale(1.2);
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 500px) {
+  .wrapper .img-area {
+    height: 250px;
+    width: 250px;
+  }
+  .social-icons a {
+    height: 50px;
+    width: 50px;
+  }
+  .social-icons a i {
+    font-size: 26px;
+  }
+}
+
+.wrapper .buttons {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.about-card {
+  background: #ecf0f3;             /* Warna card sama dengan wrapper */
+  box-shadow: -6px -6px 12px #ffffff,
+              6px 6px 12px #ceced1; /* Efek neumorphism */
+  border-radius: 20px;             /* Sudut bulat lembut */
+  padding: 20px 25px;              /* Ruang di dalam card */
+  max-width: 550px;                /* Lebar card */
+  text-align: center;              /* Teks di tengah */
+  margin: 15px 0;                  /* Jarak atas dan bawah */
+  color: #44476a;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  transition: all 0.3s ease;       /* Untuk efek hover */
+}
+
+.about-card:hover {
+  box-shadow: inset -6px -6px 12px #ffffff,
+              inset 6px 6px 12px #ceced1; /* Efek ditekan saat hover */
+}
+
+.buttons a {
+  flex: 1;
+  text-align: center;
+  padding: 15px 0;
+  color: #31344b;
+  font-size: 18px;
+  font-weight: 400;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  background: #ecf0f3;
+  box-shadow: -3px -3px 7px #ffffff,
+               3px 3px 5px #ceced1;
+}
+
+.buttons a:first-child { margin-right: 10px; }
+.buttons a:last-child { margin-left: 10px; }
+
+.buttons a:hover {
+  box-shadow: inset -3px -3px 7px #ffffff,
+              inset 3px 3px 5px #ceced1;
+}
+
+.wrapper .social-share {
+  display: none;
+}
+    </style>
 </head>
 <body>
-    <div class="splash-screen" id="splash-screen">
-        <div class="logo-splash">RK</div>
-        <div class="loading-indicator"></div>
-    </div>
-    
-    <div class="app-container" id="main-content">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">RK</div>
-                <div class="brand">
-                    <h3>RikChatBot</h3>
-                    <p>AI-powered assistant</p>
-                </div>
-            </div>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search">
-            </div>
-            <nav class="nav-links">
-                <a href="#" class="nav-item active"><i class="fas fa-comment"></i> Chats</a>
-                <a href="#" class="nav-item"><i class="fas fa-users"></i> Rooms</a>
-                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
-                <a href="#" class="nav-item clear-chat" id="clear-chat-button">
-                    <i class="fas fa-trash-alt"></i> Clear Chat
-                </a>
-            </nav>
-            <div class="divider"></div>
-            <div class="user-list">
-                <div class="user-item">
-                    <div class="user-avatar-list">JD</div>
-                    <div class="user-info">
-                        <h4>John Doe</h4>
-                        <p>Sure, I'll check that out.</p>
-                    </div>
-                </div>
-                <div class="user-item">
-                    <div class="user-avatar-list">JS</div>
-                    <div class="user-info">
-                        <h4>Jane Smith</h4>
-                        <p>Thank you so much!</p>
-                    </div>
-                </div>
-                <div class="user-item">
-                    <div class="user-avatar-list">AJ</div>
-                    <div class="user-info">
-                        <h4>Alex Johnson</h4>
-                        <p>Alright, I'll get back to....</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <main class="chat-container">
-            <header class="chat-header">
-                <button class="menu-toggle" id="menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="chat-info">
-                    <div class="user-avatar-chat">
-                        <img src="profile.jpg" alt="RikChatBot">
-                    </div>
-                    <div class="user-details">
-                        <h3>RikChatBot</h3>
-                        <p>Siap membantu kamu - tanya apa saja</p>
-                    </div>
-                </div>
-            </header>
-            
-            <div class="chat-messages" id="chat-messages"></div>
-            
-            <div class="offline-popup" id="offline-popup">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Jaringan terputus. Silakan periksa koneksi Anda.</span>
-            </div>
-
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Type a message">
-                <button id="send-button">KIRIM</button>
-            </div>
-        </main>
+  <div class="wrapper">
+    <div class="img-area">
+      <div class="inner-area">
+        <img src="profile.jpg" alt="">
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="name">RIKDEVAPPSTORE</div>
+<div class="about-card">
+  <span class="typing-text">
+  Halo, saya Thoriq Ichsani, seorang website developer dengan pengalaman lebih dari 3,6 tahun.  
+  Saya memiliki passion dalam menciptakan solusi teknologi yang inovatif dan efektif,  
+  membantu bisnis dan organisasi mencapai tujuan mereka melalui website dan aplikasi.
+  </span>
+</div>
+
+    <div class="social-icons">
+      <a href="#" class="html"><i class="fab fa-html5"></i></a>
+      <a href="#" class="css"><i class="fab fa-css3-alt"></i></a>
+      <a href="#" class="js"><i class="fab fa-js"></i></a>
+      <a href="#" class="python"><i class="fab fa-python"></i></a>
+    </div>
+
+    <div class="buttons">
+      <a href="chatbotai.html">RIKCHATTBOT.AI</a>
+      <a href="https://www.tiktok.com/@thoriqproject?_r=1&_d=el213g64e36j13&sec_uid=MS4wLjABAAAAfgEID3DX5JZ29L0S5BeVhJbX313XCiLwMVklhOzL_QseGBr4nVT9wWk3U9Ddc_yz&share_author_id=6914118469458297857&sharer_language=id&source=h5_t&u_code=dgbcigli1emch8&timestamp=1755226902&user_id=6914118469458297857&sec_user_id=MS4wLjABAAAAfgEID3DX5JZ29L0S5BeVhJbX313XCiLwMVklhOzL_QseGBr4nVT9wWk3U9Ddc_yz&item_author_type=1&utm_source=copy&utm_campaign=client_share&utm_medium=android&share_iid=7535327839933024016&share_link_id=ea738c0b-008f-4367-970b-0cf52b99f764&share_app_id=1180&ugbiz_name=ACCOUNT&ug_btm=b8727%2Cb7360&social_share_type=5&enable_checksum=1">Follow</a>
+    </div>
+  </div>
 </body>
 </html>
