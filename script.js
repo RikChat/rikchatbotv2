@@ -1,4 +1,14 @@
 // === Elemen DOM ===
+
+<!-- Script register SW -->
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.log("SW registration failed:", err));
+  }
+</script>
+
 const container = document.querySelector(".container");
 const chatsContainer = document.querySelector(".chats-container");
 const promptForm = document.querySelector(".prompt-form");
