@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RikChatBot</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@32,400,0,0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#007bff">
+<link rel="icon" href="/icon-192x192.png">
 
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- Modal Riwayat Chat -->
+  <div id="history-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-close="history-modal">&times;</span>
+      <h2>Riwayat Chat</h2>
+      <ul id="history-list">
+        <!-- Data riwayat diisi dari chatHistory -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Modal Profil -->
+  <div id="profile-modal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+      <span class="close-btn" data-close="profile-modal">&times;</span>
+      <img src="profile.jpg" alt="Foto Thoriq Ichsani" 
+           style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #fff; margin-bottom: 15px;">
+      <h2 style="margin-bottom: 5px;">Thoriq Ichsani</h2>
+      <p style="color: #bbb; font-size: 14px; margin-bottom: 15px;">Website Developer</p>
+      <p style="line-height: 1.6; text-align: justify; font-size: 14px; color: #ddd;">
+        Halo, nama saya <strong>Thoriq Ichsani</strong>. Saya adalah seorang <em>website developer</em> 
+        dengan pengalaman lebih dari <strong>3,6 tahun</strong> dalam pengembangan website dan aplikasi. 
+        Saya memiliki passion dalam menciptakan solusi teknologi yang inovatif dan efektif untuk membantu bisnis dan organisasi mencapai tujuan mereka.
+      </p>
+    </div>
+  </div>
+
+  <!-- Sidebar + Menu -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="material-symbols-rounded">smart_toy</span>
+        <h2>RikChatBot
+        </h2>
+      </div>
+    </div>
+    <nav class="menu">
+      <a href="#" class="active" id="menu-chat"><span class="material-symbols-rounded">chat</span> Chats</a>
+      <a href="#" id="menu-history"><span class="material-symbols-rounded">history</span> History</a>
+      <a href="#" id="menu-profile"><span class="material-symbols-rounded">person</span> Profil Pengembang</a>
+      <a href="#" id="delete-chats-btn"><span class="material-symbols-rounded">delete</span> Clear Chat</a>
+    </nav>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <main class="main-chat">
+<header class="chat-header">
+  <div class="bot-info">
+    <!-- Avatar Bot -->
+    <div class="avatar-wrapper">
+      <img src="profile.jpg" alt="Bot Avatar" class="avatar">
+    </div>
+    <div class="bot-text">
+<div class="bot-name">
+  RikChatBot
+  <span class="dev-badge">DEV</span>
+</div>
+      <small class="bot-status">Siap membantu kamu • Online</small>
+    </div>
+  </div>
+  <button id="theme-toggle-btn" class="material-symbols-rounded">light_mode</button>
+</header>
+
+    <!-- Chat Container -->
+    <div class="container">
+      <div class="chats-container"></div>
+    </div>
+
+    <!-- Prompt Input -->
+    <div class="prompt-container">
+      <div class="prompt-wrapper">
+        <form action="#" class="prompt-form">
+          <input type="text" placeholder="Ketik pesan..." class="prompt-input" required />
+          <div class="prompt-actions">
+            <div class="file-upload-wrapper">
+              <img src="#" class="file-preview" />
+              <input id="file-input" type="file" accept="image/*, .pdf, .txt, .csv" hidden />
+              <button type="button" class="file-icon material-symbols-rounded">description</button>
+              <button id="cancel-file-btn" type="button" class="material-symbols-rounded">close</button>
+              <button id="add-file-btn" type="button" class="material-symbols-rounded">attach_file</button>
+            </div>
+            <button id="stop-response-btn" type="button" class="material-symbols-rounded">stop_circle</button>
+            <button id="send-prompt-btn" class="material-symbols-rounded">arrow_upward</button>
+          </div>
+        </form>
+      </div>
+   
+    </div>
+  </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
