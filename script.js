@@ -98,6 +98,33 @@ const handleFormSubmit = (e) => {
   const userMessage = promptInput.value.trim();
   if (!userMessage && !userData.file.data) return;
   if (document.body.classList.contains("bot-responding")) return;
+// 🔹 CEK COMMAND /menu
+if (userMessage.toLowerCase() === "/menu") {
+  const menuHTML = `
+    <div class="menu-options">
+      <button class="menu-btn" data-cmd="/gen_text">✍️ Text Generator</button>
+      <button class="menu-btn" data-cmd="/gen_image">🖼️ Image Generator</button>
+      <button class="menu-btn" data-cmd="/gen_code">💻 Code Generator</button>
+      <button class="menu-btn" data-cmd="/Developer">💻 Pengembang Bot</button>
+    </div>
+  `;
+  const botMsgDiv = createMessageElement(
+    `<p class="message-text">🔽 Pilih generator yang kamu mau:</p>${menuHTML}`,
+    "bot-message"
+  );
+  chatsContainer.appendChild(botMsgDiv);
+  scrollToBottom();
+  promptInput.value = "";
+
+  // Event listener tombol menu
+  botMsgDiv.querySelectorAll(".menu-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      promptInput.value = btn.dataset.cmd;
+      promptForm.dispatchEvent(new Event("submit")); // otomatis kirim
+    });
+  });
+  return; // 🚫 Jangan diteruskan ke API
+}
 
   userData.message = userMessage;
   promptInput.value = "";
@@ -162,24 +189,6 @@ fileInput.addEventListener("change", async () => {
   };
 });
 
-// Cancel file upload
-document.querySelector("#cancel-file-btn").addEventListener("click", () => {
-  userData.file = {};
-  fileUploadWrapper.classList.remove("file-attached", "img-attached", "active");
-  filePreview.src = "";
-  filePreview.alt = "";
-});
-
-// Stop Bot Response
-document.querySelector("#stop-response-btn").addEventListener("click", () => {
-  controller?.abort();
-  userData.file = {};
-  clearInterval(typingInterval);
-  const loadingBot = chatsContainer.querySelector(".bot-message.loading");
-  if (loadingBot) loadingBot.classList.remove("loading");
-  document.body.classList.remove("bot-responding");
-});
-
 // Theme Toggle
 themeToggleBtn.addEventListener("click", () => {
   const isLightTheme = document.body.classList.toggle("light-theme");
@@ -217,3 +226,183 @@ document.addEventListener("click", (e) => {
     document.body.appendChild(overlay);
   }
 });
+// Auto expand textarea
+const textarea = document.querySelector(".prompt-input");
+
+textarea.addEventListener("input", () => {
+  textarea.style.height = "auto";                // reset dulu
+  textarea.style.height = textarea.scrollHeight + "px"; // ikutin konten
+});
+// === File Upload Handling ===
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const reader = new FileReader();
+
+  // Baca file sesuai tipe
+  if (isImage || file.type === "application/pdf") {
+    reader.readAsDataURL(file);
+  } else if (file.type === "text/plain" || file.type === "text/csv") {
+    reader.readAsText(file);
+  } else {
+    reader.readAsArrayBuffer(file);
+  }
+
+  reader.onload = (e) => {
+    let base64String;
+
+    if (isImage) {
+      // Preview gambar
+      base64String = e.target.result.split(",")[1];
+      filePreview.src = e.target.result;
+      filePreview.style.display = "block";
+      filePreview.alt = file.name;
+
+      fileUploadWrapper.classList.add("active", "img-attached");
+    } else if (file.type === "application/pdf") {
+      base64String = e.target.result.split(",")[1];
+      filePreview.src = "icons/pdf-icon.png"; // kasih ikon pdf (atau svg bawaan)
+      filePreview.style.display = "block";
+      filePreview.alt = file.name;
+
+      fileUploadWrapper.classList.add("active", "file-attached");
+    } else {
+      base64String = btoa(
+        e.target.result instanceof ArrayBuffer
+          ? String.fromCharCode(...new Uint8Array(e.target.result))
+          : e.target.result
+      );
+
+      filePreview.src = "icons/file-icon.png"; // default file icon
+      filePreview.style.display = "block";
+      filePreview.alt = file.name;
+
+      fileUploadWrapper.classList.add("active", "file-attached");
+    }
+
+    // Simpan ke userData untuk dikirim ke API
+    userData.file = {
+      fileName: file.name,
+      data: base64String,
+      mime_type: file.type,
+      isImage
+    };
+  };
+});
+// === File Upload Handling ===
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const reader = new FileReader();
+
+  if (isImage || file.type === "application/pdf") {
+    reader.readAsDataURL(file);
+  } else if (file.type === "text/plain" || file.type === "text/csv") {
+    reader.readAsText(file);
+  } else {
+    reader.readAsArrayBuffer(file);
+  }
+
+  reader.onload = (e) => {
+    let base64String;
+    if (isImage || file.type === "application/pdf") {
+      base64String = e.target.result.split(",")[1];
+      filePreview.src = e.target.result;
+      filePreview.style.display = "block";
+      filePreview.style.maxHeight = "120px";
+      filePreview.style.borderRadius = "8px";
+    } else {
+      base64String = btoa(e.target.result);
+      filePreview.src = "";
+      filePreview.alt = e.target.result.slice(0, 200) + (e.target.result.length > 200 ? "..." : "");
+      filePreview.style.display = "block";
+    }
+
+    // Simpan data file ke userData
+    fileUploadWrapper.classList.add("active", isImage ? "img-attached" : "file-attached");
+    userData.file = { fileName: file.name, data: base64String, mime_type: file.type, isImage };
+
+    // Tambah tombol remove jika belum ada
+    if (!fileUploadWrapper.querySelector(".remove-file")) {
+      const removeBtn = document.createElement("span");
+      removeBtn.textContent = "×";
+      removeBtn.className = "remove-file";
+      removeBtn.style.cssText = `
+        position: absolute;
+    top: -2px;
+    font-size: 16px;
+    color: #fff;
+    background: #d62939;
+    border-radius: 50%;
+    width: 20px;
+    height: 17px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      `;
+      fileUploadWrapper.style.position = "relative";
+      fileUploadWrapper.appendChild(removeBtn);
+
+      removeBtn.addEventListener("click", () => {
+        fileInput.value = "";
+        filePreview.src = "";
+        filePreview.style.display = "none";
+        fileUploadWrapper.classList.remove("active", "img-attached", "file-attached");
+        removeBtn.remove();
+        userData.file = {};
+      });
+    }
+  };
+});
+
+
+// kirim pesan user
+promptForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const userMessage = promptInput.value.trim();
+  if (!userMessage) return;
+
+  addMessage(userMessage, "user");
+  promptInput.value = "";
+
+  handleCommand(userMessage.toLowerCase());
+});
+// ==== QUICK REPLY CHIPS ====
+function showQuickReplies(replies) {
+  const botMsg = document.createElement("div");
+  botMsg.className = "message bot-message";
+  const chipsWrapper = document.createElement("div");
+  chipsWrapper.className = "quick-replies";
+
+  replies.forEach(reply => {
+    const chip = document.createElement("button");
+    chip.className = "quick-reply";
+    chip.textContent = reply.label;
+    chip.addEventListener("click", () => {
+      promptInput.value = reply.value; // isi otomatis ke input
+      promptForm.dispatchEvent(new Event("submit")); // kirim langsung
+      chipsWrapper.remove(); // hapus chips setelah dipilih
+    });
+    chipsWrapper.appendChild(chip);
+  });
+
+  chatsContainer.appendChild(chipsWrapper);
+  chatsContainer.scrollTop = chatsContainer.scrollHeight;
+}
+
+// Contoh: tampilkan chips setelah /menu
+function handleMenuCommand() {
+  appendMessage("bot", "Pilih salah satu menu di bawah ini:");
+  showQuickReplies([
+    { label: "Generate Teks", value: "/gen_text" },
+    { label: "Generate Gambar", value: "/gen_image" },
+    { label: "Generate Kode", value: "/gen_code" }
+  ]);
+}
+
+
